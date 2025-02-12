@@ -79,7 +79,7 @@ def plot_action_sequence(action_sequence, grid_length, grid_width, title, subtit
 
     # Highlight the start point
     ax.plot(x, y, 'go', markersize=10, label='Start')
-    ax.plot(x+grid_length, y+grid_width, 'go', markersize=10, label='Goal')
+    ax.plot(x+grid_length-1, y+grid_width-1, 'ro', markersize=10, label='Goal')
 
     def update(frame):
         nonlocal x, y, dx, dy
