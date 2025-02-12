@@ -30,6 +30,7 @@ class GridWorld:
             grid_dim (tuple, optional): Dimensions of the grid as (rows, columns). Defaults to (5, 5).
             agent (Agent, optional): An instance of the Agent class. Defaults to None.
             goal (tuple, optional): Coordinates of the goal position as (x, y). Defaults to (4, 4).
+            reward_vector (list, optional): List of rewards for different actions. Defaults to [10, -0.1, -1].
         """
         self._grid_dim = grid_dim
         self._agent = agent if agent is not None else Agent()
@@ -54,7 +55,10 @@ class GridWorld:
     
     def _reset_agent(self, agent_position: Tuple[int,int] = None):
         """
-        Reset the agent's position to a random position within the grid excluding the goal.
+        Reset the agent's position to a specified or random position within the grid excluding the goal.
+
+        Args:
+            agent_position (tuple, optional): The (x, y) coordinates to reset the agent to. Defaults to None.
         """
         self._grid[self._agent.position[0], self._agent.position[1]] = 0
         if agent_position is not None:
@@ -66,7 +70,6 @@ class GridWorld:
                 if self._agent.position != self._goal:
                     break
             self._grid[self._agent.position[0], self._agent.position[1]] = 2
-        pass
     
     def _is_goal_reached(self) -> bool:
         """
@@ -77,12 +80,12 @@ class GridWorld:
         """
         return self._agent.position == self._goal
     
-    def _get_reward(self, move_successful: bool = None):
+    def _get_reward(self, move_successful: bool = None) -> float:
         """
         Get the reward based on the agent's action and position.
 
         Args:
-            successful (bool, optional): Indicates if the agent's move was successful. Defaults to True.
+            move_successful (bool, optional): Indicates if the agent's move was successful. Defaults to None.
 
         Returns:
             float: The reward value based on the agent's action and position.
@@ -94,7 +97,7 @@ class GridWorld:
         else: 
             return self._reward_vector[2] # If the agent has hit a wall/invalid move, return a reward of -1
 
-    def _get_agent_position(self):
+    def _get_agent_position(self) -> Tuple[int, int]:
         """
         Get the current position of the agent.
 
@@ -111,7 +114,7 @@ class GridWorld:
             action (str): The direction to move the agent. Can be 'up', 'down', 'left', or 'right'.
 
         Returns:
-            Tuple[float, bool]: A tuple containing the reward for the action and a boolean indicating if the goal has been reached.
+            tuple: A tuple containing the reward for the action and a boolean indicating if the goal has been reached.
         """
         move_successful = self._move_agent(action)
         reward = self._get_reward(move_successful)
@@ -124,7 +127,7 @@ class GridWorld:
         Set the agent for the environment.
 
         Args:
-            agent (Agent): An instance of the Agent class.
+            agent (Agent, optional): An instance of the Agent class. Defaults to None.
         """
         self._agent = agent if agent is not None else Agent()
         self._reset_agent()
@@ -150,6 +153,9 @@ class GridWorld:
     def reset(self, agent_position: Tuple[int,int] = None):
         """
         Reset the environment to its initial state and randomizes agent position.
+
+        Args:
+            agent_position (tuple, optional): The (x, y) coordinates to reset the agent to. Defaults to None.
         """
         self._grid = np.zeros(self._grid_dim, dtype=int)
         if agent_position is not None:
