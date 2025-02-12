@@ -13,11 +13,11 @@ def Q_learning_episode(grid_world: GridWorld = None,
                function_args: dict = None,
                alpha: float = 0.1, 
                gamma: float = 0.9, 
-               agent_start: Tuple[int,int] = None) -> Tuple[list, float, int, list]:
+               agent_start: Tuple[int,int] = None,
+               enable_record: Tuple[bool, bool, bool, bool] = (False, False, False, False)) -> Tuple[list, float, int, list]:
     """
     Runs a single episode of the Q-learning algorithm.
-    Returns a list of the training data per episode. 
-    Per episode returns a list of, in order: action sequence, total reward, steps taken, and Q-table history.
+    Returns a tuple containing the action sequence, total reward, steps taken, and the final Q-table.
 
     Args:
         grid_world (GridWorld, optional): The environment in which the agent operates. Defaults to None.
@@ -29,6 +29,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
         alpha (float, optional): Learning rate for Q-learning updates. Defaults to 0.1.
         gamma (float, optional): Discount factor for future rewards. Defaults to 0.9.
         agent_start (Tuple[int, int], optional): Starting position of the agent. Defaults to None.
+        enable_record (Tuple[bool, bool, bool, bool], optional): Flags to enable recording of action sequence, steps taken, total reward, and Q-table updates. Defaults to (False, False, False, False).
 
     Raises:
         ValueError: If any of the required parameters (grid_world, actions, q_table, selection_function) are None.
@@ -39,7 +40,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
             - action_sequence (list): Sequence of actions taken by the agent.
             - total_reward (float): Total reward accumulated during the episode.
             - steps_taken (int): Number of steps taken to reach the goal.
-            - q_table_history (list): History of Q-table updates during the episode.
+            - final_q_table (list): The final Q-table after the episode.
     """
     
     # Check if any of the parameters are None
@@ -65,29 +66,29 @@ def Q_learning_episode(grid_world: GridWorld = None,
     grid_world.reset(agent_start)  # Initializes the agent and environment state
 
     action_sequence = []
-    q_table_history = []
+    final_q_table = None
     steps_taken = 0
     total_reward = 0
 
     goal_reached = False
 
     while not goal_reached:
-        q_table_history.append(q_table.copy())
-
         state = grid_world.get_state()[1]  # Get the current state of the environment
         action = selection_function(state, **function_args)
 
         reward, goal_reached = grid_world.step_agent(get_key_by_value(actions, action))
 
-        action_sequence.append(action)
-        steps_taken += 1
-        total_reward += reward
+        action_sequence.append(action) if enable_record[0] else None
+        steps_taken += 1 if enable_record[1] else None
+        total_reward += reward if enable_record[2] else None
 
         next_state = grid_world.get_state()[1]  # Get the next state of the environment
 
-        Q_learning_table_upate(state, next_state, action, reward, q_table, alpha, gamma)
+        Q_learning_table_update(state, next_state, action, reward, q_table, alpha, gamma)
 
-    return action_sequence, total_reward, steps_taken, q_table_history
+    final_q_table = q_table.copy() if enable_record[3] else None
+
+    return action_sequence, total_reward, steps_taken, final_q_table
 
 def epsilon_greedy_selection(state: Tuple[int, ...], q_table: np.ndarray = None, epsilon: float = 0.1) -> int:
     """
@@ -113,7 +114,13 @@ def epsilon_greedy_selection(state: Tuple[int, ...], q_table: np.ndarray = None,
     
     pass
 
-def Q_learning_table_upate(state: Tuple[int, ...] = None, next_state: Tuple[int, ...] = None, action: int = None, reward: float = None, q_table: np.ndarray = None, alpha: float = 0.1, gamma: float = 0.9):
+def Q_learning_table_update(state: Tuple[int, ...] = None, 
+                           next_state: Tuple[int, ...] = None, 
+                           action: int = None, 
+                           reward: float = None, 
+                           q_table: np.ndarray = None,
+                           alpha: float = 0.1, 
+                           gamma: float = 0.9):
     """
     Updates the Q-table using the Q-learning algorithm.
 
