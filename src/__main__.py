@@ -18,8 +18,8 @@ def main():
         print("Hello, World!")
         
         # Environment/Grid World Settings
-        grid_length = 50
-        grid_width = 50
+        grid_length = 5
+        grid_width = 5
         reward_vector = [10, -0.1, -1] # In order, the reward for reaching the goal, moving, and an invalid move
 
         environment = GridWorld((grid_length, grid_width), None, (grid_length-1, grid_width-1), reward_vector)
@@ -86,7 +86,7 @@ def main():
         first_q_table_2d = q_table_to_2d_array(first_q_table, grid_length, grid_width)
         last_q_table_2d = q_table_to_2d_array(last_q_table, grid_length, grid_width)
 
-        """# Plot the first Q-table
+        # Plot the first Q-table
         fig, ax = plt.subplots(figsize=(12, 8))
         ax.axis('off')
         table = ax.table(cellText=first_q_table_2d, colLabels=["State(x,y)"] + list(actions.keys()), loc='center')
@@ -126,7 +126,7 @@ def main():
         plt.title('Steps Taken per Episode')
         plt.suptitle(training_settings_summary + "\n" + agent_settings_summary + "\n" + manual_settings_summary, fontsize=8)
         plt.legend()
-        plt.show()"""
+        plt.show()
 
         # Plot the first action sequence
         first_action_sequence = training_data[0][0]
