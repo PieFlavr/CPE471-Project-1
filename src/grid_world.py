@@ -1,7 +1,7 @@
 """
-__init__.py
+grid_world.py
 
-Description: Main program entry point. The primary loop for the agent is here.
+Description: This module defines a GridWorld class that simulates a grid-based environment where an agent can move and receive rewards.
 Author: Lucas Pinto
 Date: February 10, 2025
 
