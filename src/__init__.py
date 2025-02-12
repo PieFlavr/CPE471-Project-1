@@ -24,7 +24,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
                gamma: float = 0.9, 
                agent_start: Tuple[int,int] = None) -> Tuple[list, float, int, list]:
     """
-    Q_learning_episode runs a single episode of the Q-learning algorithm.
+    Runs a single episode of the Q-learning algorithm.
 
     Args:
         grid_world (GridWorld, optional): The environment in which the agent operates. Defaults to None.
@@ -35,6 +35,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
         function_args (dict, optional): Arguments for the selection function. Defaults to None.
         alpha (float, optional): Learning rate for Q-learning updates. Defaults to 0.1.
         gamma (float, optional): Discount factor for future rewards. Defaults to 0.9.
+        agent_start (Tuple[int, int], optional): Starting position of the agent. Defaults to None.
 
     Raises:
         ValueError: If any of the required parameters (grid_world, actions, q_table, selection_function) are None.
@@ -68,7 +69,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
     except TypeError as e:
         raise ValueError(f"Selection function arguments are invalid: {e}")
 
-    grid_world.reset(agent_start) # Initializes the agent and environment state
+    grid_world.reset(agent_start)  # Initializes the agent and environment state
 
     action_sequence = []
     q_table_history = []
@@ -80,7 +81,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
     while not goal_reached:
         q_table_history.append(q_table.copy())
 
-        state = grid_world.get_state()[1] # Do board history later
+        state = grid_world.get_state()[1]  # Get the current state of the environment
         action = selection_function(state, **function_args)
 
         reward, goal_reached = grid_world.step_agent(get_key_by_value(actions, action))
@@ -89,7 +90,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
         steps_taken += 1
         total_reward += reward
 
-        next_state = grid_world.get_state()[1] # Do board history later
+        next_state = grid_world.get_state()[1]  # Get the next state of the environment
 
         Q_learning_table_upate(state, next_state, action, reward, q_table, alpha, gamma)
 
@@ -97,9 +98,10 @@ def Q_learning_episode(grid_world: GridWorld = None,
 
 def epsilon_greedy_selection(state: Tuple[int, ...], q_table: np.ndarray = None, epsilon: float = 0.1) -> int:
     """
-    Select an action using the epsilon-greedy policy.
+    Selects an action using the epsilon-greedy policy.
 
     Args:
+        state (Tuple[int, ...]): The current state of the environment.
         q_table (np.ndarray, optional): Array of Q-values for each action. Defaults to None.
         epsilon (float, optional): Probability of choosing a random action. Defaults to 0.1.
 
@@ -120,15 +122,23 @@ def epsilon_greedy_selection(state: Tuple[int, ...], q_table: np.ndarray = None,
 
 def Q_learning_table_upate(state: Tuple[int, ...] = None, next_state: Tuple[int, ...] = None, action: int = None, reward: float = None, q_table: np.ndarray = None, alpha: float = 0.1, gamma: float = 0.9):
     """
-    Update the Q-table using the Q-learning algorithm.
+    Updates the Q-table using the Q-learning algorithm.
 
     Args:
+        state (Tuple[int, ...], optional): The current state of the environment. Defaults to None.
+        next_state (Tuple[int, ...], optional): The next state of the environment. Defaults to None.
+        action (int, optional): The action taken by the agent. Defaults to None.
+        reward (float, optional): The reward received after taking the action. Defaults to None.
         q_table (np.ndarray, optional): Array of Q-values for each state-action pair. Defaults to None.
         alpha (float, optional): Learning rate. Defaults to 0.1.
         gamma (float, optional): Discount factor. Defaults to 0.9.
 
     Raises:
         ValueError: If q_table is None.
+        ValueError: If state is None.
+        ValueError: If next_state is None.
+        ValueError: If action is None.
+        ValueError: If reward is None.
     """
     if q_table is None:
         raise ValueError("q_table cannot be None!")
