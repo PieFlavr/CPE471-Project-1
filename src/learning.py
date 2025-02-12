@@ -1,3 +1,27 @@
+"""
+learning.py
+
+Description: This module implements the Q-learning algorithm for a GridWorld environment. It includes functions for running a Q-learning episode, selecting actions using an epsilon-greedy policy, and updating the Q-table.
+Author: Lucas Pinto
+Date: February 11, 2025
+
+Modules:
+    numpy - For numerical operations on arrays.
+    utils - Utility functions used in the project.
+    grid_world - The GridWorld environment class.
+    agent - The Agent class that interacts with the environment.
+    typing - For type hinting.
+
+Functions:
+    Q_learning_episode - Runs a single episode of the Q-learning algorithm.
+    epsilon_greedy_selection - Selects an action using the epsilon-greedy policy.
+    Q_learning_table_update - Updates the Q-table using the Q-learning algorithm.
+
+Usage:
+    python main.py
+"""
+
+
 import numpy as np
 
 from utils import *
