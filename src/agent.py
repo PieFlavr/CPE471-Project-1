@@ -50,14 +50,15 @@ class Agent:
         x, y = self.position
         grid_length, grid_width = grid_dim
 
-        if action == 'up' and x > 0:
-            x -= 1
-        elif action == 'down' and x < grid_length - 1:
-            x += 1
-        elif action == 'left' and y > 0:
+        if action == 'up' and y > 0:
             y -= 1
-        elif action == 'right' and y < grid_width - 1:
+        elif action == 'down' and y < grid_width - 1:
             y += 1
+        elif action == 'left' and x > 0:
+            x -= 1
+        elif action == 'right' and x < grid_length - 1:
+            x += 1
+            
 
         self.position = (x, y)
         return self.position
