@@ -7,6 +7,7 @@ Date: February 11, 2025
 
 """
 import numpy as np
+import matplotlib.pyplot as plt
 
 from utils import *
 from grid_world import GridWorld
@@ -20,7 +21,8 @@ def Q_learning_episode(grid_world: GridWorld = None,
                selection_function: callable = None,
                function_args: dict = None,
                alpha: float = 0.1, 
-               gamma: float = 0.9) -> Tuple[list, float, int, list]:
+               gamma: float = 0.9, 
+               agent_start: Tuple[int,int] = None) -> Tuple[list, float, int, list]:
     """
     Q_learning_episode runs a single episode of the Q-learning algorithm.
 
@@ -66,7 +68,7 @@ def Q_learning_episode(grid_world: GridWorld = None,
     except TypeError as e:
         raise ValueError(f"Selection function arguments are invalid: {e}")
 
-    grid_world.reset() # Initializes the agent and environment state
+    grid_world.reset(agent_start) # Initializes the agent and environment state
 
     action_sequence = []
     q_table_history = []
@@ -143,7 +145,6 @@ def Q_learning_table_upate(state: Tuple[int, ...] = None, next_state: Tuple[int,
         q_table[(*state, action)]
     except TypeError as e:
         raise ValueError("state and action must be usable to access the q_table!")
-    print((*state, action))
     q_table[(*state, action)] = (q_table[(*state, action)]
     + alpha * (reward 
                 + gamma * np.max(q_table[(*next_state, )]) 
