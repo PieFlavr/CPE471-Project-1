@@ -21,6 +21,9 @@ Usage:
 from typing import Tuple
 
 class Agent:
+    """
+    A class to represent an agent that can move within a grid.
+    """
 
     def __init__(self, position: Tuple[int, int] = (0, 0)):
         """
