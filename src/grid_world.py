@@ -55,7 +55,7 @@ class GridWorld:
         """
         Reset the agent's position to a random position within the grid excluding the goal.
         """
-        self._grid = np.zeros(self._grid_dim, dtype = int)
+        self._grid[self._agent.position.x, self._agent.position.y] = 0
         while True:
             self._agent.position = (np.random.choice(self._grid_dim[0]), np.random.choice(self._grid_dim[1]))
             if(any(self._agent.position != self._goal)):
@@ -112,7 +112,26 @@ class GridWorld:
         done = self._is_goal_reached()
 
         return reward, done
-        
+
+    def set_agent(self, agent: Agent = None):
+        """
+        Set the agent for the environment.
+
+        Args:
+            agent (Agent): An instance of the Agent class.
+        """
+        self._agent = agent if not None else Agent()
+        self._reset_agent()
+
+    def get_agent(self) -> Agent:
+        """
+        Get the agent in the environment.
+
+        Returns:
+            Agent: The agent in the environment.
+        """
+        return self._agent
+    
     def get_state(self) -> Tuple[np.ndarray[int], Tuple[int,int]]:
         """
         Get the current state of the grid and the agent's position.
@@ -121,3 +140,10 @@ class GridWorld:
             tuple: A tuple containing the grid and the agent's current position.
         """
         return self._grid, self.get_agent_position()
+    
+    def reset(self):
+        """
+        Reset the environment to its initial state and randomizes agent position.
+        """
+        self.grid = np.zeros(self._grid_dim, dtype=int)
+        self._reset_agent()
