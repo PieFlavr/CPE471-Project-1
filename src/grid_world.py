@@ -32,10 +32,10 @@ class GridWorld:
             goal (tuple, optional): Coordinates of the goal position as (x, y). Defaults to (4, 4).
         """
         self._grid_dim = grid_dim
-        self._agent = agent if agent is not None else Agent() # If no agent is provided, create a new one
+        self._agent = agent if agent is not None else Agent()
         self._goal = goal if goal is not None else (self._grid_dim[0] - 1, self._grid_dim[1] - 1) # If no goal is provided, set it to the bottom-right corner
         self._grid = np.zeros(grid_dim)
-        self._grid[agent.position.x, agent.position.y] = 2 # Represents the agent as a 2 in the grid
+        self._grid[self._agent.position[0], self._agent.position[1]] = 2 # Represents the agent as a 2 in the grid
 
     def _move_agent(self, action: str = None) -> bool:
         """
@@ -47,20 +47,20 @@ class GridWorld:
         Returns:
             bool: True if the action was successful, False otherwise.
         """
-        self._grid[self._agent.position.x, self._agent.position.y] = 0
+        self._grid[self._agent.position[0], self._agent.position[1]] = 0
         self._agent.move(action, self._grid_dim)
-        self._grid[self._agent.position.x, self._agent.position.y] = 2
+        self._grid[self._agent.position[0], self._agent.position[1]] = 2
     
     def _reset_agent(self):
         """
         Reset the agent's position to a random position within the grid excluding the goal.
         """
-        self._grid[self._agent.position.x, self._agent.position.y] = 0
+        self._grid[self._agent.position[0], self._agent.position[1]] = 0
         while True:
             self._agent.position = (np.random.choice(self._grid_dim[0]), np.random.choice(self._grid_dim[1]))
-            if(any(self._agent.position != self._goal)):
+            if self._agent.position != self._goal:
                 break
-        self._grid[self._agent.position.x, self._agent.position.y] = 2
+        self._grid[self._agent.position[0], self._agent.position[1]] = 2
     
     def _is_goal_reached(self) -> bool:
         """
@@ -95,7 +95,7 @@ class GridWorld:
         Returns:
             tuple: The (x, y) coordinates of the agent's current position.
         """
-        return tuple(self._agent.position.x, self._agent.position.y)
+        return self._agent.position
     
     def step_agent(self, action: str) -> Tuple[float, bool]:
         """
@@ -120,7 +120,7 @@ class GridWorld:
         Args:
             agent (Agent): An instance of the Agent class.
         """
-        self._agent = agent if not None else Agent()
+        self._agent = agent if agent is not None else Agent()
         self._reset_agent()
 
     def get_agent(self) -> Agent:
@@ -132,18 +132,18 @@ class GridWorld:
         """
         return self._agent
     
-    def get_state(self) -> Tuple[np.ndarray[int], Tuple[int,int]]:
+    def get_state(self) -> Tuple[np.ndarray, Tuple[int,int]]:
         """
         Get the current state of the grid and the agent's position.
 
         Returns:
             tuple: A tuple containing the grid and the agent's current position.
         """
-        return self._grid, self.get_agent_position()
+        return self._grid, self._get_agent_position()
     
     def reset(self):
         """
         Reset the environment to its initial state and randomizes agent position.
         """
-        self.grid = np.zeros(self._grid_dim, dtype=int)
+        self._grid = np.zeros(self._grid_dim, dtype=int)
         self._reset_agent()
