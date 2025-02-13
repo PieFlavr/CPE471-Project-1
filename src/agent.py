@@ -34,7 +34,7 @@ class Agent:
         """
         self.position = position
 
-    def move(self, action: str = None, grid_dim: Tuple[int, int] = (5, 5)):
+    def move(self, action: str = None, grid_dim: Tuple[int, int] = (5, 5)) -> bool:
         """
         Move the agent in the specified direction within the grid dimensions.
 
@@ -45,7 +45,7 @@ class Agent:
                              Defaults to (5, 5).
 
         Returns:
-            Tuple[int, int]: The new position of the agent as (x, y).
+            bool: True if the agent moved successfully, False otherwise.
         """
         x, y = self.position
         grid_length, grid_width = grid_dim
@@ -58,7 +58,8 @@ class Agent:
             x -= 1
         elif action == 'right' and x < grid_length - 1:
             x += 1
-            
+        else:
+            return False
 
         self.position = (x, y)
-        return self.position
+        return True

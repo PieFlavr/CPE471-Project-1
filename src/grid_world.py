@@ -50,8 +50,10 @@ class GridWorld:
             bool: True if the action was successful, False otherwise.
         """
         self._grid[self._agent.position[0], self._agent.position[1]] = 0
-        self._agent.move(action, self._grid_dim)
+        move_successful = self._agent.move(action, self._grid_dim)
         self._grid[self._agent.position[0], self._agent.position[1]] = 2
+        return move_successful
+ 
     
     def _reset_agent(self, agent_position: Tuple[int,int] = None):
         """
