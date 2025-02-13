@@ -3,7 +3,7 @@ __main__.py
 
 Description: This script initializes and runs the main application for the CPE471 Project 1.
 Author: Lucas Pinto
-Date: February 11, 2025
+Date: February 12, 2025
 
 """
 
@@ -53,6 +53,7 @@ def main():
         enable_first_action_sequence_plots = True
         enable_last_action_sequence_plots = True
 
+        # Summarize training settings for display purposes
         training_settings_summary = f"{grid_length}x{grid_width} Grid World\nEpisodes: {episodes}, Alpha: {alpha}, Gamma: {gamma}, Epsilon: {epsilon}\nRewards: {reward_vector}"
         agent_settings_summary = f"Agent Start: (0, 0), Goal: ({grid_length-1}, {grid_width-1})"
         algorithm_settings_summary = None

@@ -3,13 +3,20 @@ utils.py
 
 Description: Utility functions for the project.
 Author: Lucas Pinto
-Date: February 10, 2025
+Date: February 12, 2025
 
 Modules:
     None
 
 Functions:
     get_key_by_value
+    q_table_to_2d_array
+    plot_action_sequence
+    plot_q_table
+    plot_episode_data
+    save_training_data_to_csv
+    save_training_data_set_to_csv
+    interpret_action_sequence
 
 Usage:
 """
@@ -189,11 +196,16 @@ def plot_episode_data(data, episodes, title, subtitle=None, xlabel='Episode', yl
     plt.show()
 
 def save_training_data_to_csv(filename, training_data):
-    """save_training_data_to_csv _summary_
+    """
+    Saves the training data to a CSV file.
 
     Args:
-        filename (_type_): _description_
-        training_data (_type_): _description_
+        filename (str): The name of the file to save the data to.
+        training_data (list): A list of training data, where each element is a tuple containing:
+            - Action Sequence (list): The sequence of actions taken.
+            - Total Reward (float): The total reward obtained.
+            - Steps Taken (int): The number of steps taken.
+            - Q-Table (np.ndarray): The Q-table at the end of the episode.
     """
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -202,12 +214,13 @@ def save_training_data_to_csv(filename, training_data):
             writer.writerow([episode + 1, data[0], data[1], data[2], data[3]])
 
 def save_training_data_set_to_csv(filename, training_data_column, data_set_name):
-    """save_training_data_set_to_csv _summary_
+    """
+    Saves a specific column of training data to a CSV file.
 
     Args:
-        filename (_type_): _description_
-        training_data_column (_type_): _description_
-        data_set_name (_type_): _description_
+        filename (str): The name of the file to save the data to.
+        training_data_column (list): The column of training data to save.
+        data_set_name (str): The name of the data set (column header).
     """
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
@@ -216,14 +229,16 @@ def save_training_data_set_to_csv(filename, training_data_column, data_set_name)
             writer.writerow([episode + 1, data])
 
 def interpret_action_sequence(action_sequence, actions: dict = None) -> list:
-    """interpret_action_sequence _summary_
+    """
+    Interprets a sequence of actions into their corresponding action names.
 
     Args:
-        action_sequence (_type_): _description_
-        actions (_type_): _description_
+        action_sequence (list): List of actions taken by the agent.
+        actions (dict, optional): Dictionary mapping action indices to action names. 
+                                  Default is {0: 'up', 1: 'down', 2: 'left', 3: 'right'}.
 
     Returns:
-        _type_: _description_
+        list: List of action names corresponding to the action sequence.
     """
     if actions is None:
         actions = {0: 'up', 1: 'down', 2: 'left', 3: 'right'}
