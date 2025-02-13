@@ -20,149 +20,139 @@ def main():
         # Environment/Grid World Settings
         grid_length = 100
         grid_width = 100
-        reward_vector = [grid_length*grid_width, -1, -(grid_length*grid_width)/10.0] # In order, the reward for reaching the goal, moving, and an invalid move
+        reward_vector = [grid_length*grid_width, -1, -5] # In order, the reward for reaching the goal, moving, and an invalid move
         # ^^^ scales dynamically with the grid size
         environment = GridWorld((grid_length, grid_width), None, (grid_length-1, grid_width-1), reward_vector)
+        agent_start = (0, 0) # None = random, yet to account for random position in graphing though!
 
         # Agent Possible Actions
         actions = {'up': 0, 'down': 1, 'left': 2, 'right': 3}
 
+        # Learning Settings
+        learning_algorithms = {'Q-Learning': Q_learning_episode, 'Q-Lambda': Q_lambda_episode}
+        enable_learning_algorithms = [True, True] # Enable Q-Learning, Q-Lambda, etc...
+
         # Q-learning Settings
-        episodes = 10000
-        alpha = 0.33 # Learning rate, how much the agent learns from new information
-        gamma = 0.80 # Discount factor, how much the agent values future rewards
+        episodes = 1000
+        alpha = 0.15 # Learning rate, how much the agent learns from new information
+        gamma = 0.95 # Discount factor, how much the agent values future rewards
         epsilon = 0.1 # Exploration rate, how often the agent explores instead of exploiting
+
+        # Q-Lambda Settings (uses ^^^ settings)
+        lambda_value = 0.5 # Lambda value for Q-Lambda learning
 
         # Enable recording of action sequence, total rewards, steps taken, and Q-table history
         enable_record_set_1 = [True, True, True, True] # Applies to first and last episode
         enable_record_set_2 = [False, True, True, False] # Applies to everything between first and last episode
         
         # Plotting Settings
-        fps = 6000 # Frames per second for the plot animation, disables animation at 0
+        fps = 0 # Frames per second for the plot animation, disables animation at 0
 
         enable_q_table_plots = False # Enable Q-table plots
         enable_episode_plots = False # Enable episode plots such as rewards/steps over time
-        enable_first_action_sequence_plots = False
+        enable_first_action_sequence_plots = True
         enable_last_action_sequence_plots = True
 
         training_settings_summary = f"{grid_length}x{grid_width} Grid World\nEpisodes: {episodes}, Alpha: {alpha}, Gamma: {gamma}, Epsilon: {epsilon}\nRewards: {reward_vector}"
         agent_settings_summary = f"Agent Start: (0, 0), Goal: ({grid_length-1}, {grid_width-1})"
-        manual_settings_summary = "Trained w/ Q-Leaning and Epsilon-Greedy Selection"
+        algorithm_settings_summary = None
 
-        # Initialize Q-table with zeros
-        q_table = np.zeros((grid_length, grid_width, len(actions)), dtype = float) # Initialize Q-table with zeros
-        
-        training_data = []
+        for algorithm_name, algorithm_function in learning_algorithms.items():
 
-        print("Training Q-Learning agent...")
-        
-        enable_record = enable_record_set_1
+            algorithm_settings_summary = f"Trained w/ {algorithm_name} and Epsilon-Greedy Selection"
 
-        for episode in range(episodes):
-            if(episode == 0) or (episode == episodes-1):
-                enable_record = enable_record_set_1
-            else:
-                enable_record = enable_record_set_2
+            # Initialize Q-table with zeros
+            q_table = np.zeros((grid_length, grid_width, len(actions)), dtype = float) # Initialize Q-table with zeros
 
-            print(f"Training Q-Learning agent Episode {episode+1} of {episodes}...", end=' ')
-            # Run a single episode of Q-learning
-            # Per episode returns a list of, in order: action sequence, total reward, steps taken, and Q-table history.
-            action_sequence, total_rewards, steps_taken, q_table_history = Q_learning_episode(grid_world=environment, 
-                                                                                                agent=None, 
-                                                                                                actions=actions,
-                                                                                                q_table=q_table,
-                                                                                                selection_function=epsilon_greedy_selection,
-                                                                                                function_args={'q_table': q_table, 'epsilon': epsilon},
-                                                                                                alpha=alpha, 
-                                                                                                gamma=gamma, 
-                                                                                                agent_start=(0, 0), 
-                                                                                                enable_record=enable_record)
-            training_data.append([action_sequence, total_rewards, steps_taken, q_table_history])
-            print(f"Completed!!! Total Reward: {total_rewards}, Steps Taken: {steps_taken}.")
+            training_data = []
             
-        print("Q-Learning Training completed.")
+            enable_record = enable_record_set_1
+            
+            if enable_learning_algorithms[list(learning_algorithms.keys()).index(algorithm_name)]:
+                for episode in range(episodes):
+                    environment.reset()
+                    if (episode == 0) or (episode == episodes - 1):
+                        enable_record = enable_record_set_1
+                    else:
+                        enable_record = enable_record_set_2
 
-        # Extract total rewards and steps taken per episode
-        total_rewards = [data[1] for data in training_data]
-        steps_taken = [data[2] for data in training_data]
+                    print(f"Training {algorithm_name} agent Episode {episode + 1} of {episodes}...", end=' ')
+                    # Run a single episode of the learning algorithm
+                    action_sequence, total_reward, steps_taken, q_table_history = None, None, None, None
+                    if algorithm_name == 'Q-Learning':
+                        action_sequence, total_reward, steps_taken, q_table_history = Q_learning_episode(
+                            environment, None, actions, q_table, 
+                            epsilon_greedy_selection, {'q_table': q_table, 'epsilon': epsilon},
+                            alpha, gamma, agent_start, enable_record)
+                    elif algorithm_name == 'Q-Lambda':
+                        action_sequence, total_reward, steps_taken, q_table_history = Q_lambda_episode(
+                            environment, None, actions, q_table, 
+                            epsilon_greedy_selection, {'q_table': q_table, 'epsilon': epsilon},
+                            alpha, gamma, lambda_value, agent_start, enable_record)
+                    
+                    training_data.append([action_sequence, total_reward, steps_taken, q_table_history])
+                    print(f"Completed!!! Total Reward: {total_reward}, Steps Taken: {steps_taken}.")
 
-        # Extract the first and last Q-tables
-        first_q_table = training_data[0][3]
-        last_q_table = training_data[-1][3]
+                print(f"{algorithm_name} Training completed.")
 
-        # Convert Q-tables to 2D arrays for visualization
-        first_q_table_2d = q_table_to_2d_array(first_q_table, grid_length, grid_width)
-        last_q_table_2d = q_table_to_2d_array(last_q_table, grid_length, grid_width)
+                # Extract total rewards and steps taken per episode
+                total_rewards = [data[1] for data in training_data]
+                steps_taken = [data[2] for data in training_data]
 
-        if(grid_length*grid_width <= 25) and (enable_q_table_plots): # Too high and the q_Table simply crashes the program
+                # Extract the first and last Q-tables
+                first_q_table = training_data[0][3]
+                last_q_table = training_data[-1][3]
 
-            # Plot the first Q-table
-            fig, ax = plt.subplots(figsize=(12, 8))
-            ax.axis('off')
-            table = ax.table(cellText=first_q_table_2d, colLabels=["State(x,y)"] + list(actions.keys()), loc='center')
-            table.auto_set_font_size(False)
-            table.set_fontsize(10)
-            table.scale(1.2, 1.2)
-            plt.title('First Q-table')
-            plt.suptitle(training_settings_summary + "\n" + agent_settings_summary + "\n" + manual_settings_summary, fontsize=8)
-            plt.show()
-
-            # Plot the last Q-table
-            fig, ax = plt.subplots(figsize=(12, 8))
-            ax.axis('off')
-            table = ax.table(cellText=last_q_table_2d, colLabels=["State(x,y)"] + list(actions.keys()), loc='center')
-            table.auto_set_font_size(False)
-            table.set_fontsize(10)
-            table.scale(1.2, 1.2)
-            plt.title('Last Q-table')
-            plt.suptitle(training_settings_summary + "\n" + agent_settings_summary + "\n" + manual_settings_summary, fontsize=8)
-            plt.show()
-        
-        else: 
-            print("Grid too large to display Q-tables. Try to keep the area under 25 cells.")
-
-        if(enable_episode_plots):
-            # Plot total rewards per episode
-            plt.figure(figsize=(12, 10))
-            plt.plot(range(episodes), total_rewards, label='Total Reward')
-            plt.xlabel('Episode')
-            plt.ylabel('Total Reward')
-            plt.title('Total Reward per Episode')
-            plt.suptitle(training_settings_summary + "\n" + agent_settings_summary + "\n" + manual_settings_summary, fontsize=8)
-            plt.legend()
-            plt.show()
-
-            # Plot steps taken per episode
-            plt.figure(figsize=(12, 8))
-            plt.plot(range(episodes), steps_taken, label='Steps Taken', color='orange')
-            plt.xlabel('Episode')
-            plt.ylabel('Steps Taken')
-            plt.title('Steps Taken per Episode')
-            plt.suptitle(training_settings_summary + "\n" + agent_settings_summary + "\n" + manual_settings_summary, fontsize=8)
-            plt.legend()
-            plt.show()
-
-        if(enable_first_action_sequence_plots):
-            # Plot the first action sequence
-            first_action_sequence = training_data[0][0]
-            plot_action_sequence(first_action_sequence, 
-                                grid_length, grid_width, 
-                                'First Action Sequence', 
-                                (training_settings_summary
+                if(grid_length*grid_width <= 25) and (enable_q_table_plots): # Too high and the q_Table simply crashes the program
+                    plot_q_table(first_q_table, grid_length, grid_width, 
+                                actions, 'First Q-table', 
+                                training_settings_summary
                                 + "\n" + agent_settings_summary
-                                    + "\n" + manual_settings_summary),
-                                    fps=fps)
-
-        if(enable_last_action_sequence_plots):
-            # Plot the last action sequence
-            last_action_sequence = training_data[-1][0]
-            plot_action_sequence(last_action_sequence, 
-                                grid_length, grid_width, 
-                                'Last Action Sequence', 
-                                (training_settings_summary
+                                    + "\n" + algorithm_settings_summary)
+                    
+                    plot_q_table(last_q_table, grid_length, grid_width, 
+                                actions, 'Last Q-table', 
+                                training_settings_summary
                                 + "\n" + agent_settings_summary
-                                    + "\n" + manual_settings_summary),
-                                    fps=fps)
+                                    + "\n" + algorithm_settings_summary)
+                else: 
+                    print("Grid too large to display Q-tables. Try to keep the area under 25 cells.")
+
+                if(enable_episode_plots):
+                    # Plot total rewards per episode
+                    plot_episode_data(total_rewards, episodes, 'Total Reward per Episode', 
+                                    training_settings_summary
+                                        + "\n" + agent_settings_summary
+                                        + "\n" + algorithm_settings_summary,
+                                            ylabel='Total Reward', label='Total Reward', color='blue')
+
+                    # Plot steps taken per episode
+                    plot_episode_data(steps_taken, episodes, 'Steps Taken per Episode',
+                                    training_settings_summary
+                                        + "\n" + agent_settings_summary
+                                        + "\n" + algorithm_settings_summary,
+                                            ylabel='Steps Taken', label='Steps Taken', color='orange')
+
+                if(enable_first_action_sequence_plots):
+                    # Plot the first action sequence
+                    first_action_sequence = training_data[0][0]
+                    plot_action_sequence(first_action_sequence, grid_length, grid_width, 
+                                        'First Action Sequence', 
+                                        (training_settings_summary
+                                        + "\n" + agent_settings_summary
+                                            + "\n" + algorithm_settings_summary),
+                                            fps=fps)
+
+                if(enable_last_action_sequence_plots):
+                    # Plot the last action sequence
+                    last_action_sequence = training_data[-1][0]
+                    plot_action_sequence(last_action_sequence, grid_length, grid_width, 
+                                        'Last Action Sequence', 
+                                        (training_settings_summary
+                                        + "\n" + agent_settings_summary
+                                            + "\n" + algorithm_settings_summary),
+                                            fps=fps)
+            
     pass
 
 main()
