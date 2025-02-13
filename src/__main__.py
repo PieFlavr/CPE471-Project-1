@@ -46,7 +46,7 @@ def main():
         enable_record_set_2 = [True, True, True, True] # Applies to everything between first and last episode
         
         # Plotting Settings
-        fps = 0 # Frames per second for the plot animation, disables animation at 0
+        fps = 60 # Frames per second for the plot animation, disables animation at 0
 
         enable_q_table_plots = True # Enable Q-table plots
         enable_episode_plots = True # Enable episode plots such as rewards/steps over time
@@ -88,12 +88,12 @@ def main():
                     # Run a single episode of the learning algorithm
                     action_sequence, total_reward, steps_taken, q_table_history = None, None, None, None
                     if algorithm_name == 'Q-Learning':
-                        action_sequence, total_reward, steps_taken, q_table_history = Q_learning_episode(
+                        action_sequence, total_reward, steps_taken, q_table_history = algorithm_function(
                             environment, None, actions, q_table, 
                             epsilon_greedy_selection, {'q_table': q_table, 'epsilon': epsilon},
                             alpha, gamma, agent_start, enable_record)
                     elif algorithm_name == 'Q-Lambda':
-                        action_sequence, total_reward, steps_taken, q_table_history = Q_lambda_episode(
+                        action_sequence, total_reward, steps_taken, q_table_history = algorithm_function(
                             environment, None, actions, q_table, 
                             epsilon_greedy_selection, {'q_table': q_table, 'epsilon': epsilon},
                             alpha, gamma, lambda_value, agent_start, enable_record)
