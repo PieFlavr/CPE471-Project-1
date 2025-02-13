@@ -18,8 +18,8 @@ def main():
         print("Hello, World!")
         
         # Environment/Grid World Settings
-        grid_length = 5
-        grid_width = 5
+        grid_length = 10
+        grid_width = 10
         reward_vector = [grid_length*grid_width, -1, -5] # In order, the reward for reaching the goal, moving, and an invalid move
         # ^^^ scales dynamically with the grid size
         environment = GridWorld((grid_length, grid_width), None, (grid_length-1, grid_width-1), reward_vector)
