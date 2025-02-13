@@ -16,6 +16,7 @@ Usage:
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import csv
 
 def get_key_by_value(dictionary, target_value):
     """
@@ -124,7 +125,7 @@ def plot_action_sequence(action_sequence, grid_length, grid_width, title, subtit
     else:
         for i in range(num_actions):
             update(i)
-            
+
     print("Action sequence plot complete.")
 
     plt.title(title)
@@ -132,3 +133,99 @@ def plot_action_sequence(action_sequence, grid_length, grid_width, title, subtit
     plt.gca().invert_yaxis()
     plt.legend()
     plt.show()
+
+def plot_q_table(q_table, grid_length, grid_width, actions, title, subtitle=None, figsize=(12, 8), font_size=10, scale=(1.2, 1.2)):
+    """
+    Plots a Q-table as a 2D table.
+
+    Args:
+        q_table (np.ndarray): The Q-table to plot.
+        grid_length (int): Length of the grid.
+        grid_width (int): Width of the grid.
+        actions (dict): Dictionary of possible actions.
+        title (str): Title of the plot.
+        subtitle (str, optional): Subtitle of the plot.
+        figsize (tuple, optional): Size of the figure. Default is (12, 8).
+        font_size (int, optional): Font size of the table text. Default is 10.
+        scale (tuple, optional): Scale of the table. Default is (1.2, 1.2).
+    """
+    q_table_2d = q_table_to_2d_array(q_table, grid_length, grid_width)
+
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.axis('off')
+    table = ax.table(cellText=q_table_2d, colLabels=["State(x,y)"] + list(actions.keys()), loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(font_size)
+    table.scale(*scale)
+    plt.title(title)
+    if subtitle:
+        plt.suptitle(subtitle, fontsize=8)
+    plt.show()
+
+def plot_episode_data(data, episodes, title, subtitle=None, xlabel='Episode', ylabel='Value', label='Data', color='blue', figsize=(12, 8), fontsize=8):
+    """
+    Plots episode data (e.g., total rewards or steps taken) per episode.
+
+    Args:
+        data (list): List of data values per episode.
+        episodes (int): Number of episodes.
+        title (str): Title of the plot.
+        subtitle (str, optional): Subtitle of the plot.
+        xlabel (str, optional): Label for the x-axis. Default is 'Episode'.
+        ylabel (str, optional): Label for the y-axis. Default is 'Value'.
+        label (str, optional): Label for the plot line. Default is 'Data'.
+        color (str, optional): Color of the plot line. Default is 'blue'.
+        figsize (tuple, optional): Size of the figure. Default is (12, 8).
+        fontsize (int, optional): Font size of the subtitle. Default is 8.
+    """
+    plt.figure(figsize=figsize)
+    plt.plot(range(episodes), data, label=label, color=color)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    if subtitle:
+        plt.suptitle(subtitle, fontsize=fontsize)
+    plt.legend()
+    plt.show()
+
+def save_training_data_to_csv(filename, training_data):
+    """save_training_data_to_csv _summary_
+
+    Args:
+        filename (_type_): _description_
+        training_data (_type_): _description_
+    """
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Episode', 'Action Sequence', 'Total Reward', 'Steps Taken', 'Q-Table'])
+        for episode, data in enumerate(training_data):
+            writer.writerow([episode + 1, data[0], data[1], data[2], data[3]])
+
+def save_training_data_set_to_csv(filename, training_data_column, data_set_name):
+    """save_training_data_set_to_csv _summary_
+
+    Args:
+        filename (_type_): _description_
+        training_data_column (_type_): _description_
+        data_set_name (_type_): _description_
+    """
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Episode', data_set_name])
+        for episode, data in enumerate(training_data_column):
+            writer.writerow([episode + 1, data])
+
+def interpret_action_sequence(action_sequence, actions: dict = None) -> list:
+    """interpret_action_sequence _summary_
+
+    Args:
+        action_sequence (_type_): _description_
+        actions (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    if actions is None:
+        actions = {0: 'up', 1: 'down', 2: 'left', 3: 'right'}
+    interpreted_sequence = [get_key_by_value(actions, action) for action in action_sequence]
+    return interpreted_sequence

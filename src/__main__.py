@@ -18,8 +18,8 @@ def main():
         print("Hello, World!")
         
         # Environment/Grid World Settings
-        grid_length = 100
-        grid_width = 100
+        grid_length = 5
+        grid_width = 5
         reward_vector = [grid_length*grid_width, -1, -5] # In order, the reward for reaching the goal, moving, and an invalid move
         # ^^^ scales dynamically with the grid size
         environment = GridWorld((grid_length, grid_width), None, (grid_length-1, grid_width-1), reward_vector)
@@ -43,19 +43,27 @@ def main():
 
         # Enable recording of action sequence, total rewards, steps taken, and Q-table history
         enable_record_set_1 = [True, True, True, True] # Applies to first and last episode
-        enable_record_set_2 = [False, True, True, False] # Applies to everything between first and last episode
+        enable_record_set_2 = [True, True, True, True] # Applies to everything between first and last episode
         
         # Plotting Settings
         fps = 0 # Frames per second for the plot animation, disables animation at 0
 
-        enable_q_table_plots = False # Enable Q-table plots
-        enable_episode_plots = False # Enable episode plots such as rewards/steps over time
+        enable_q_table_plots = True # Enable Q-table plots
+        enable_episode_plots = True # Enable episode plots such as rewards/steps over time
         enable_first_action_sequence_plots = True
         enable_last_action_sequence_plots = True
 
         training_settings_summary = f"{grid_length}x{grid_width} Grid World\nEpisodes: {episodes}, Alpha: {alpha}, Gamma: {gamma}, Epsilon: {epsilon}\nRewards: {reward_vector}"
         agent_settings_summary = f"Agent Start: (0, 0), Goal: ({grid_length-1}, {grid_width-1})"
         algorithm_settings_summary = None
+
+        # File Saving Settings
+        save_training_data = True # Enable saving of training data
+        save_directory = "training_data" # Directory to save the CSV files
+
+        # Ensure the directory exists
+        if not os.path.exists(save_directory):
+            os.makedirs(save_directory)
 
         for algorithm_name, algorithm_function in learning_algorithms.items():
 
@@ -96,6 +104,8 @@ def main():
                 print(f"{algorithm_name} Training completed.")
 
                 # Extract total rewards and steps taken per episode
+                raw_action_sequence_history = [data[0] for data in training_data]
+                q_table_history = [data[3] for data in training_data]
                 total_rewards = [data[1] for data in training_data]
                 steps_taken = [data[2] for data in training_data]
 
@@ -115,7 +125,7 @@ def main():
                                 training_settings_summary
                                 + "\n" + agent_settings_summary
                                     + "\n" + algorithm_settings_summary)
-                else: 
+                elif(grid_length*grid_width > 25): 
                     print("Grid too large to display Q-tables. Try to keep the area under 25 cells.")
 
                 if(enable_episode_plots):
@@ -152,7 +162,18 @@ def main():
                                         + "\n" + agent_settings_summary
                                             + "\n" + algorithm_settings_summary),
                                             fps=fps)
-            
+                
+                if(save_training_data):
+                    save_training_data_to_csv(os.path.join(save_directory, f"training_data_{algorithm_name}.csv"), training_data)
+                    save_training_data_set_to_csv(os.path.join(save_directory, f"total_rewards_{algorithm_name}.csv"), total_rewards, "Total Rewards")
+                    save_training_data_set_to_csv(os.path.join(save_directory, f"steps_taken_{algorithm_name}.csv"), steps_taken, "Steps Taken")
+                    save_training_data_set_to_csv(os.path.join(save_directory, f"q_table_history_{algorithm_name}.csv"), q_table_history, "Q-table")
+                    save_training_data_set_to_csv(os.path.join(save_directory, f"raw_action_sequence_history_{algorithm_name}.csv"), raw_action_sequence_history, "Action Sequence")
+                    interpreted_action_sequence_history = []
+                    for action_sequence in raw_action_sequence_history:
+                        interpreted_action_sequence = interpret_action_sequence(action_sequence, actions)
+                        interpreted_action_sequence_history.append(interpreted_action_sequence)
+                    save_training_data_set_to_csv(os.path.join(save_directory, f"interpreted_action_sequence_history_{algorithm_name}.csv"), interpreted_action_sequence_history, "Action Sequence")
     pass
 
 main()
