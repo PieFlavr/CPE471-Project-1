@@ -18,8 +18,8 @@ def main():
         print("Hello, World!")
         
         # Environment/Grid World Settings
-        grid_length = 5
-        grid_width = 5
+        grid_length = 10
+        grid_width = 10
         reward_vector = [grid_length*grid_width, -1, -5] # In order, the reward for reaching the goal, moving, and an invalid move
         # ^^^ scales dynamically with the grid size
         environment = GridWorld((grid_length, grid_width), None, (grid_length-1, grid_width-1), reward_vector)
@@ -46,7 +46,7 @@ def main():
         enable_record_set_2 = [True, True, True, True] # Applies to everything between first and last episode
         
         # Plotting Settings
-        fps = 60 # Frames per second for the plot animation, disables animation at 0
+        fps = 300 # Frames per second for the plot animation, disables animation at 0
 
         enable_q_table_plots = True # Enable Q-table plots
         enable_episode_plots = True # Enable episode plots such as rewards/steps over time
