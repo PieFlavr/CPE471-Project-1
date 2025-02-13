@@ -13,19 +13,23 @@ This project implements a Grid World environment for reinforcement learning algo
 - **CSV Export**: Exports training data, rewards, steps, and action sequences to CSV files.
 
 ## Project Submission Files
-The project report and its used data files are organized in a folder named `report`. This folder includes the training data for two different grid sizes using both Q-Learning and Q-Lambda algorithms:
+The data files analyzed in the report are organized in a folder named `project_data`. The report itself is a .pdf file in the main directory named `Pinto CS471 - Project 1 Report.pd`. The `project_data` folder includes the training data for two different grid sizes using both Q-Learning and Q-Lambda algorithms:
 
 - **5x5 Grid**:
-    - Training data for Q-Learning
-    - Training data for Q-Lambda
+    - Q-Learning Images
+    - Q-Learning Training Data
+    - Q-Lambda Images
+    - Q-Lambda Training Data
 
 - **10x10 Grid**:
-    - Training data for Q-Learning
-    - Training data for Q-Lambda
+    - Q-Learning Images
+    - Q-Learning Training Data
+    - Q-Lambda Images
+    - Q-Lambda Training Data
 
 ## Dependencies
+This project requies a **Python** version of 3.12.9 or higher to run.
 You are going to need the following dependencies for this project. Whether older version work or not are unknown as they have not been tested, but these were the versions used when developing this.
-- **Python**: 3.12.9 or higher
 - **NumPy**: 2.2.2 or higher
 - **Matplotlib**: 3.10.0 or higher
 

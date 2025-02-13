@@ -22,7 +22,8 @@ def main():
         grid_width = 10
         reward_vector = [grid_length*grid_width, -1, -5] # In order, the reward for reaching the goal, moving, and an invalid move
         # ^^^ scales dynamically with the grid size
-        environment = GridWorld((grid_length, grid_width), None, (grid_length-1, grid_width-1), reward_vector)
+        goal_position = None # If None, default is bottom right corner
+        environment = GridWorld((grid_length, grid_width), goal_position, (grid_length-1, grid_width-1), reward_vector)
         agent_start = (0, 0) # None = random, yet to account for random position in graphing though!
 
         # Agent Possible Actions
