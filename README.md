@@ -51,11 +51,9 @@ Once the projects starts, by default, it will in sequence:
 ## Demonstration
 Here are two demonstration videos on how to run it and how it should look like...
 
-### 5x5 DEMO
-<video width = "600" height = "400" controls src="project_data/5x5Demo.mp4" title="5x5Demo" allowfullscreen></video>
+**5x5 DEMO:** https://youtu.be/a9IlX-IIqPI
 
-### 10x10 DEMO
-<video width = "600" height = "400" controls src="project_data/10x10Demo.mp4" title="10x10Demo" allowfullscreen></video>
+**10x10 DEMO:** https://youtu.be/QAEhNdgtyeM
 
 ## Configuration
 The main configuration settings for the Grid World environment and reinforcement learning algorithms can be found in the `main` function. Below is a list of settings that you can customize:
