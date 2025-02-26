@@ -13,7 +13,7 @@ This project implements a Grid World environment for reinforcement learning algo
 - **CSV Export**: Exports training data, rewards, steps, and action sequences to CSV files.
 
 ## Project Submission Files
-The project report and its used data files are organized in a folder named `report`. This folder includes the training data for two different grid sizes using both Q-Learning and Q-Lambda algorithms:
+The project report and its used data files are organized in a folder named `project_data`. This folder includes the training data for two different grid sizes using both Q-Learning and Q-Lambda algorithms:
 
 - **5x5 Grid**:
     - Training data for Q-Learning

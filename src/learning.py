@@ -324,6 +324,53 @@ def Q_lambda_table_update(state: Tuple[int, ...] = None,
     # Decay eligibility traces
     e_table *= gamma * lambda_
 
+def decaying_epsilon_greedy_Q_selection(state: Tuple[int, ...], q_table: np.ndarray = None, epsilon: float = 0.1, decay: float = 0.99, episode: int = None) -> int:
+    """decaying_epsilon_greedy_Q_selection _summary_
+
+    Args:
+        state (Tuple[int, ...]): _description_
+        q_table (np.ndarray, optional): _description_. Defaults to None.
+        epsilon (float, optional): _description_. Defaults to 0.1.
+        decay (float, optional): _description_. Defaults to 0.99.
+        episode (int, optional): _description_. Defaults to None.
+
+    Returns:
+        int: _description_
+    """
+    if q_table is None:
+        raise ValueError("q_table cannot be None!")
+    if episode is None:
+        raise ValueError("episode cannot be None!")
+    if np.random.rand() < epsilon * decay**episode:
+        return np.random.choice(len(q_table[(*state,)]))
+    else: # Return the action with the highest Q-value
+        return np.argmax(q_table[(*state,)])
+    pass
+
+def softmax_Q_selection(state: Tuple[int, ...], q_table: np.ndarray = None, tau: float = 0.1) -> int:
+    """
+    Selects an action using the softmax policy.
+
+    Args:
+        state (Tuple[int, ...]): The current state of the environment.
+        q_table (np.ndarray, optional): Array of Q-values for each action. Defaults to None.
+        tau (float, optional): Temperature parameter for the softmax function. Defaults to 0.1.
+
+    Returns:
+        int: Index of the selected action.
+    """
+    if state is None:
+        raise ValueError("state cannot be None!")
+    if q_table is None:
+        raise ValueError("q_table cannot be None!")
+
+    q_values = q_table[(*state, )] # Get the possible Q-values for the current state
+    probabilities = np.exp(q_values / tau) / np.sum(np.exp(q_values / tau)) # Softmax + normalization of possible Q-values
+    print(probabilities)
+    return np.random.choice(len(q_values), p=probabilities) # Return an action based on the probabilities
+
+    pass
+
 def epsilon_greedy_selection(state: Tuple[int, ...], q_table: np.ndarray = None, epsilon: float = 0.1) -> int:
     """
     Selects an action using the epsilon-greedy policy.

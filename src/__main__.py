@@ -18,8 +18,8 @@ def main():
         print("Hello, World!")
         
         # Environment/Grid World Settings
-        grid_length = 100
-        grid_width = 100
+        grid_length = 10
+        grid_width = 10
         reward_vector = [grid_length*grid_width, -1, -5] # In order, the reward for reaching the goal, moving, and an invalid move
         # ^^^ scales dynamically with the grid size
         goal_position = None # If None, default is bottom right corner
@@ -34,7 +34,7 @@ def main():
         enable_learning_algorithms = [True, True] # Enable Q-Learning, Q-Lambda, etc...
 
         # Q-learning Settings
-        episodes = 10000
+        episodes = 300
         alpha = 0.15 # Learning rate, how much the agent learns from new information
         gamma = 0.95 # Discount factor, how much the agent values future rewards
         epsilon = 0.1 # Exploration rate, how often the agent explores instead of exploiting
@@ -47,7 +47,7 @@ def main():
         enable_record_set_2 = [True, True, True, True] # Applies to everything between first and last episode
         
         # Plotting Settings
-        fps = 600000 # Frames per second for the plot animation, disables animation at 0
+        fps = 600 # Frames per second for the plot animation, disables animation at 0
 
         enable_q_table_plots = True # Enable Q-table plots
         enable_episode_plots = True # Enable episode plots such as rewards/steps over time
@@ -92,12 +92,12 @@ def main():
                     if algorithm_name == 'Q-Learning':
                         action_sequence, total_reward, steps_taken, q_table_history = algorithm_function(
                             environment, None, actions, q_table, 
-                            epsilon_greedy_selection, {'q_table': q_table, 'epsilon': epsilon},
+                            decaying_epsilon_greedy_Q_selection, {'q_table': q_table, 'epsilon': epsilon, 'decay': 0.80, 'episode': episodes},
                             alpha, gamma, agent_start, enable_record)
                     elif algorithm_name == 'Q-Lambda':
                         action_sequence, total_reward, steps_taken, q_table_history = algorithm_function(
                             environment, None, actions, q_table, 
-                            epsilon_greedy_selection, {'q_table': q_table, 'epsilon': epsilon},
+                            decaying_epsilon_greedy_Q_selection, {'q_table': q_table, 'epsilon': epsilon, 'decay': 0.80, 'episode': episodes},
                             alpha, gamma, lambda_value, agent_start, enable_record)
                     
                     training_data.append([action_sequence, total_reward, steps_taken, q_table_history])
