@@ -18,8 +18,8 @@ def main():
         print("Hello, World!")
         
         # Environment/Grid World Settings
-        grid_length = 10
-        grid_width = 10
+        grid_length = 100
+        grid_width = 100
         reward_vector = [grid_length*grid_width, -1, -5] # In order, the reward for reaching the goal, moving, and an invalid move
         # ^^^ scales dynamically with the grid size
         goal_position = None # If None, default is bottom right corner
@@ -34,7 +34,7 @@ def main():
         enable_learning_algorithms = [True, True] # Enable Q-Learning, Q-Lambda, etc...
 
         # Q-learning Settings
-        episodes = 1000
+        episodes = 10000
         alpha = 0.15 # Learning rate, how much the agent learns from new information
         gamma = 0.95 # Discount factor, how much the agent values future rewards
         epsilon = 0.1 # Exploration rate, how often the agent explores instead of exploiting
@@ -47,7 +47,7 @@ def main():
         enable_record_set_2 = [True, True, True, True] # Applies to everything between first and last episode
         
         # Plotting Settings
-        fps = 60 # Frames per second for the plot animation, disables animation at 0
+        fps = 600000 # Frames per second for the plot animation, disables animation at 0
 
         enable_q_table_plots = True # Enable Q-table plots
         enable_episode_plots = True # Enable episode plots such as rewards/steps over time
